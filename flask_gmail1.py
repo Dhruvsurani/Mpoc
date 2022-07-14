@@ -26,7 +26,7 @@ def index():
         gmail_service = discovery.build('gmail', 'v1', http_auth)
         results = gmail_service.users().messages().list(userId='me').execute()
         th_df = pd.DataFrame(results)
-        # column = list(th_df)
+        column = list(th_df)
         print(th_df.head(1))
         msg_id = th_df['messages'][0]['id']
 
