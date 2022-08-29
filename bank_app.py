@@ -1,73 +1,136 @@
-users = []
-accounts = {}
-class BankSystem:
+class Bank:
     def __init__(self):
-        """
-        cust_name is the name of customer 
-        balance is customer account balance 
-        Mobile number for contact with customer for any query
-        PIN number is account pin number
-        """
-        self.cust_name = input('Enter user name :')
-        self.balance = float(input('Enter amount :'))
-        self.mobile_no = int(input('Enter mobile number :'))
-        self.pin = int(input('Enter PIN :'))
+        self.bank_list = []
+        self.accounts_list = {}
+        self.Bank_created = False
+        self.account_created = False
+        self.logedin = False
+        self.dp_ammount = False
+        self.wd_amount = False
 
-        accounts['username'] = self.cust_name
-        accounts['balance'] = self.balance
-        accounts['mobile_no'] = self.mobile_no
-        accounts['pin'] = self.pin
+    def create_bank(self ,bankname):
+        conditions = True
+        if bankname in self.bank_list:
+            print('\nBank is already created')
+            conditions = False
 
-        users.append(accounts)
-    def account_detail(self):
-        
-        print('Customer name is :',self.cust_name,'\nAccount balance is :',
-        self.balance,'\nMobile number is :',self.mobile_no,'\nPIN is :',self.pin)
+        if conditions:
+            print('\nBank create successfully !')
+            self.bank_list.append(bankname)
+            self.Bank_created = True
 
-    def deposit_amount(self):
-        dp = float(input('Enter the amount for deposit:'))
-        self.balance += dp
-        for i in users:
-            i['balance']=self.balance
-        
+    def create_account(self,username,pin,amount,bankname):
+        conditions = True
 
-    def withdraw_amount(self):
-        pin_no = int(input('Enter your pin number :'))
+        if len(pin) > 4:
+            print("\nPIN length attlist 4 !")
+            conditions = False
+        if conditions:
 
-        for i in users:
-            while i['pin']!=pin_no:
-                print('Enter valid pin number')
-                pin_no = int(input('Enter your pin number :'))
-            else:
-                wa = int(input('Enter amount :'))
-                if self.balance >= wa:
-                    self.balance -= wa
-                else:
-                    print('you balance is :',self.balance,'please enter valid ammount for withdrawl')
-                for i in users:
-                    i['balance']=self.balance
-                
+            account_detail = {}
+            print("\nAccount created successfully !")
+            account_detail['username'] = username
+            account_detail['pin'] = pin
+            account_detail['Balance'] = amount
+            account_detail['Bankname'] = bankname
+            self.accounts_list[username] = account_detail
+            self.account_created = True
 
-
-
-class option(BankSystem):
-    def __init__(self):
-        super().__init__()
-    
-    def options(self):
-        number = int(input('1) Show account detail \n2) Show account balance \n3) Widrow amount \n4) Deposit amount \n'))
-        if number == 1:
-            print(self.account_detail()) 
-        elif number == 2:
-            print(self.balance) 
-        elif number == 3:
-            print(self.withdraw_amount())
-            print('Available balance :',self.balance)
+    def account_login(self,username,pin):
+        if username in self.accounts_list.keys() and pin == self.accounts_list[username].get('pin'):
+            self.logedin = True
+            # print(self.accounts_list)
+            print(self.accounts_list[username])
         else:
-            print(self.deposit_amount())
-            print('Available balance :',self.balance)
+            print("\nWrong username or password")
+            self.logedin = False
 
-customer1 = option()
+    def add_amount(self,usename,amount):
 
-customer1.options()
-print(users)
+        self.accounts_list[usename]['Balance'] += amount
+        self.dp_ammount = True
+        # print(self.accounts_list)
+        print(self.accounts_list[username]['Balance'])
+
+    def withdraw_amount(self,username,amount):
+        self.accounts_list[username]['Balance'] -= amount
+        self.wd_amount = True
+        # print(self.accounts_list)
+        print(self.accounts_list[username]['Balance'])
+
+    def show_balance(self,username):
+        print(self.accounts_list[username]['Balance'])
+
+
+if __name__ == "__main__":
+    Bank_account_object = Bank()
+    while True:
+        print("\nWelcome to my Bank")
+        print("1.Create Bank")
+        print("2.Login")
+        print("3.Create new Account")
+        user = int(input("Make decision: "))
+
+        if user == 1:
+            print("\nCreating new Bank")
+            bank_name = input("\nEnter Bank name : ")
+            Bank_account_object.create_bank(bank_name)
+            print(Bank_account_object.bank_list)
+
+        if user == 2:
+            print("\nEnter User Name and PIN for Login !")
+            username = input("Enter User name : ")
+            pin = input("Enter PIN number : ")
+            Bank_account_object.account_login(username,pin)
+            while True:
+                if Bank_account_object.logedin:
+                    print("\n1.Add amount")
+                    print("2.Check Balcane")
+                    print("3.Withdraw amount")
+                    print("4.Logout")
+                    login_user = int(input())
+                    if login_user == 1:
+                        print("\nEnter Your Amount ")
+                        amount = int(input("Enter Amount : "))
+                        Bank_account_object.add_amount(username,amount)
+                    elif login_user == 2:
+                        print("\nYour Bank Balance !")
+                        Bank_account_object.show_balance(username)
+                    elif login_user == 3:
+                        print("\nEnter amount for Withdrawal !")
+                        amount = int(input("Enter Amount : "))
+                        Bank_account_object.withdraw_amount(username,amount)
+                    elif login_user == 4:
+                        break
+
+
+        if user == 3:
+            print("\nPlease Enter details to create new Account.")
+            username = input("\nEnter user Name :")
+            pin = input("Enter PIN :")
+            amount = int(input("Enter amount : "))
+            bankname = input("Enter bank name : ")
+            Bank_account_object.create_account(username,pin,amount,bankname)
+            # print(Bank_account_object.accounts_list)
+
+            while True:
+                if Bank_account_object.account_created:
+                    print("\n1.Add amount")
+                    print("2.Check Balcane")
+                    print("3.Withdraw amount")
+                    print("4.Logout")
+                    created_user = int(input())
+                    if created_user == 1:
+                        print("Enter Your Amount ")
+                        amount = int(input("Enter Amount : "))
+                        Bank_account_object.add_amount(username,amount)
+                    if created_user == 2:
+                        print("\nYour Bank Balance !")
+                        Bank_account_object.show_balance(username)
+                    if created_user == 3:
+                        print("\nEnter amount for Withdrawal !")
+                        amount = int(input("Enter Amount : "))
+                        Bank_account_object.withdraw_amount(username,amount)
+                    if created_user == 4:
+                        break
+
